@@ -85,7 +85,7 @@ func InitializeAccount(accountPublicKey, mintPublicKey, ownerPublickey common.Pu
 	}
 }
 
-func InitializeMultisig(authPubkey common.PublicKey, signerPubkeys []common.PublicKey, miniRequired uint8) types.Instruction {
+func InitializeMultiSig(authPubkey common.PublicKey, signerPubkeys []common.PublicKey, miniRequired uint8) types.Instruction {
 	if len(signerPubkeys) < 1 {
 		panic("minimum of signer is 1")
 	}

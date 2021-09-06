@@ -8,7 +8,7 @@ import (
 	"github.com/36625090/solana-go/common"
 )
 
-const MultisigAccountSize uint64 = 355
+const MultiSigAccountSize uint64 = 355
 
 const MintAccountSize = 82
 

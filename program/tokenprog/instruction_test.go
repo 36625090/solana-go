@@ -574,8 +574,8 @@ func TestInitializeMultisig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := InitializeMultisig(tt.args.authPubkey, tt.args.signerPubkeys, tt.args.miniRequired); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("InitializeMultisig() = %v, want %v", got, tt.want)
+			if got := InitializeMultiSig(tt.args.authPubkey, tt.args.signerPubkeys, tt.args.miniRequired); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("InitializeMultiSig() = %v, want %v", got, tt.want)
 			}
 		})
 	}
