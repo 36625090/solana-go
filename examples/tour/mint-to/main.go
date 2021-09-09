@@ -11,19 +11,18 @@ import (
 	"github.com/36625090/solana-go/types"
 )
 
-var feePayer = types.AccountFromPrivateKeyBytes([]byte{178, 244, 76, 4, 247, 41, 113, 40, 111, 103, 12, 76, 195, 4, 100, 123, 88, 226, 37, 56, 209, 180, 92, 77, 39, 85, 78, 202, 121, 162, 88, 29, 125, 155, 223, 107, 139, 223, 229, 82, 89, 209, 27, 43, 108, 205, 144, 2, 74, 159, 215, 57, 198, 4, 193, 36, 161, 50, 160, 119, 89, 240, 102, 184})
+var alice = types.AccountFromPrivateKeyBytes([]byte{
+	248, 218, 217, 179, 205, 246, 32, 71, 89, 196, 230, 186, 198, 3, 72, 129, 68, 123, 255, 168, 178, 159, 71, 77, 230, 224, 125, 128, 90, 71, 198, 151, 127, 110, 161, 46, 135, 199, 206, 180, 147, 196, 182, 171, 139, 194, 152, 37, 230, 55, 116, 178, 97, 9, 115, 255, 52, 86, 154, 215, 97, 168, 100, 213,
+})
+var mintPubkey = common.PublicKeyFromString("BNmuE7xMKtrfAYyb8tfXLcb5pAPYdaNEn6i1oMBddhX4")
 
-var alice = types.AccountFromPrivateKeyBytes([]byte{196, 114, 86, 165, 59, 177, 63, 87, 43, 10, 176, 101, 225, 42, 129, 158, 167, 43, 81, 214, 254, 28, 196, 158, 159, 64, 55, 123, 48, 211, 78, 166, 127, 96, 107, 250, 152, 133, 208, 224, 73, 251, 113, 151, 128, 139, 86, 80, 101, 70, 138, 50, 141, 153, 218, 110, 56, 39, 122, 181, 120, 55, 86, 185})
+var aliceTokenRandomTokenPubkey = common.PublicKeyFromString("8MZyXdPURRE5Tt5R8kcxemN87RuS6MUJ5BLmpn1V6CWZ")
 
-var mintPubkey = common.PublicKeyFromString("GGn5NvxqYr5XyyGzy2ssZbB3phaiiD3jZ4dQ7EdqLmJm")
-
-var aliceTokenRandomTokenPubkey = common.PublicKeyFromString("D1XZiUBBBJgSdoarntBEDSeQLaN7S5kACNUpW9Jd8Cw")
-
-var aliceTokenATAPubkey = common.PublicKeyFromString("81Ck4pb8sZVYacLVHh4KbyiYHX8qnR4JvuZcyPiJN5cc")
+//var aliceTokenATAPubkey = common.PublicKeyFromString("81Ck4pb8sZVYacLVHh4KbyiYHX8qnR4JvuZcyPiJN5cc")
 
 func main() {
-	c := client.NewClient(rpc.DevnetRPCEndpoint)
-
+	c := client.NewClient(rpc.TestnetRPCEndpoint)
+	//acct, _ := types.AccountFromBase58("9aScuM78feG8JXj3gCUJsXAkaaauUhkMpJyLftkj1XZW")
 	res, err := c.GetRecentBlockhash(context.Background())
 	if err != nil {
 		log.Fatalf("get recent block hash error, err: %v\n", err)
@@ -35,12 +34,13 @@ func main() {
 				aliceTokenRandomTokenPubkey,
 				alice.PublicKey,
 				[]common.PublicKey{},
-				1e8,
-				8,
+				1,
+				0,
 			),
 		},
-		Signers:         []types.Account{feePayer, alice},
-		FeePayer:        feePayer.PublicKey,
+
+		Signers:         []types.Account{alice},
+		FeePayer:        alice.PublicKey,
 		RecentBlockHash: res.Blockhash,
 	})
 	if err != nil {

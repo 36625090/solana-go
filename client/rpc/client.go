@@ -12,6 +12,7 @@ import (
 const (
 	DevnetRPCEndpoint  = "https://api.devnet.solana.com"
 	TestnetRPCEndpoint = "https://api.testnet.solana.com"
+	//TestnetRPCEndpoint = "http://localhost:8899"
 	MainnetRPCEndpoint = "https://api.mainnet-beta.solana.com"
 )
 

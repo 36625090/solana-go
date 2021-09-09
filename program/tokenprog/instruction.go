@@ -243,6 +243,38 @@ func SetAuthority(accountPubkey, newAuthPubkey common.PublicKey, authType Author
 	}
 }
 
+func DisableMint(accountPubkey common.PublicKey, authPubkey common.PublicKey, signerPubkeys []common.PublicKey) types.Instruction {
+	data, err := bincode.SerializeData(struct {
+		Instruction   Instruction
+		AuthorityType AuthorityType
+		Option        bool
+		NewAuthPubkey common.PublicKey
+	}{
+		Instruction:   InstructionSetAuthority,
+		AuthorityType: AuthorityTypeMintTokens,
+		Option:        true,
+		NewAuthPubkey: common.PublicKey{},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	accounts := make([]types.AccountMeta, 0, 2+len(signerPubkeys))
+	accounts = append(accounts,
+		types.AccountMeta{PubKey: accountPubkey, IsSigner: false, IsWritable: true},
+		types.AccountMeta{PubKey: authPubkey, IsSigner: len(signerPubkeys) == 0, IsWritable: false},
+	)
+	for _, signerPubkey := range signerPubkeys {
+		accounts = append(accounts, types.AccountMeta{PubKey: signerPubkey, IsSigner: true, IsWritable: false})
+	}
+
+	return types.Instruction{
+		ProgramID: common.TokenProgramID,
+		Accounts:  accounts,
+		Data:      data,
+	}
+}
+
 func MintTo(mintPubkey, destPubkey, authPubkey common.PublicKey, signerPubkeys []common.PublicKey, amount uint64) types.Instruction {
 	data, err := bincode.SerializeData(struct {
 		Instruction Instruction

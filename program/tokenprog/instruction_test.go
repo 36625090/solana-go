@@ -1,6 +1,10 @@
 package tokenprog
 
 import (
+	"context"
+	"github.com/36625090/solana-go/client"
+	"github.com/36625090/solana-go/client/rpc"
+	"log"
 	"reflect"
 	"testing"
 
@@ -610,4 +614,41 @@ func TestSyncNative(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDisableMint(t *testing.T) {
+
+	var alice = types.AccountFromPrivateKeyBytes([]byte{
+		61, 103, 131, 192, 166, 221, 206, 161, 9, 35, 0, 68, 42, 71, 136, 199, 24, 39, 146, 179, 140, 139, 58, 149, 172, 52, 81, 3, 205, 236, 212, 77, 108,
+		177, 196, 22, 17, 53, 254, 10, 102, 110, 46, 250, 91, 28, 21, 184, 202, 194, 206, 0, 15, 147, 229, 224, 198, 197, 133, 147, 200, 177, 40, 246,
+	})
+
+	var token = common.PublicKeyFromString("5HwM7QxqjGKyNMFcNNv7tVFWu67itbVykjpZNnJoADjC")
+
+	inst := DisableMint(token, alice.PublicKey, []common.PublicKey{alice.PublicKey})
+	log.SetFlags(log.Lshortfile | log.LstdFlags)
+	c := client.NewClient(rpc.TestnetRPCEndpoint)
+
+	res, err := c.GetRecentBlockhash(context.Background())
+	if err != nil {
+		log.Fatalf("get recent block hash error, err: %v\n", err)
+	}
+	rawTx, err := types.CreateRawTransaction(types.CreateRawTransactionParam{
+		Instructions: []types.Instruction{
+			inst,
+		},
+		Signers:         []types.Account{alice},
+		FeePayer:        alice.PublicKey,
+		RecentBlockHash: res.Blockhash,
+	})
+	if err != nil {
+		log.Fatalf("generate tx error, err: %v\n", err)
+	}
+
+	txn, err := c.SendRawTransaction(context.Background(), rawTx)
+	if err != nil {
+		log.Fatalf("send raw tx error, err: %v\n", err)
+	}
+
+	log.Println("disable mint:", txn)
 }

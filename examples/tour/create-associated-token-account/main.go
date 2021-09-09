@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/36625090/solana-go/client"
@@ -12,35 +11,34 @@ import (
 	"github.com/36625090/solana-go/types"
 )
 
-var feePayer = types.AccountFromPrivateKeyBytes([]byte{178, 244, 76, 4, 247, 41, 113, 40, 111, 103, 12, 76, 195, 4, 100, 123, 88, 226, 37, 56, 209, 180, 92, 77, 39, 85, 78, 202, 121, 162, 88, 29, 125, 155, 223, 107, 139, 223, 229, 82, 89, 209, 27, 43, 108, 205, 144, 2, 74, 159, 215, 57, 198, 4, 193, 36, 161, 50, 160, 119, 89, 240, 102, 184})
+//var alice = types.AccountFromPrivateKeyBytes([]byte{196, 114, 86, 165, 59, 177, 63, 87, 43, 10, 176, 101, 225, 42, 129, 158, 167, 43, 81, 214, 254, 28, 196, 158, 159, 64, 55, 123, 48, 211, 78, 166, 127, 96, 107, 250, 152, 133, 208, 224, 73, 251, 113, 151, 128, 139, 86, 80, 101, 70, 138, 50, 141, 153, 218, 110, 56, 39, 122, 181, 120, 55, 86, 185})
+var alice = types.AccountFromPrivateKeyBytes([]byte{
+	61, 103, 131, 192, 166, 221, 206, 161, 9, 35, 0, 68, 42, 71, 136, 199, 24, 39, 146, 179, 140, 139, 58, 149, 172, 52, 81, 3, 205, 236, 212, 77, 108,
+	177, 196, 22, 17, 53, 254, 10, 102, 110, 46, 250, 91, 28, 21, 184, 202, 194, 206, 0, 15, 147, 229, 224, 198, 197, 133, 147, 200, 177, 40, 246,
+})
 
-var alice = types.AccountFromPrivateKeyBytes([]byte{196, 114, 86, 165, 59, 177, 63, 87, 43, 10, 176, 101, 225, 42, 129, 158, 167, 43, 81, 214, 254, 28, 196, 158, 159, 64, 55, 123, 48, 211, 78, 166, 127, 96, 107, 250, 152, 133, 208, 224, 73, 251, 113, 151, 128, 139, 86, 80, 101, 70, 138, 50, 141, 153, 218, 110, 56, 39, 122, 181, 120, 55, 86, 185})
-
-var mintPubkey = common.PublicKeyFromString("GGn5NvxqYr5XyyGzy2ssZbB3phaiiD3jZ4dQ7EdqLmJm")
+var mintPubkey = common.PublicKeyFromString("CW28sov3Dseo2NQSvJJd1yQnMxxmMiPJ2jzBetnipigZ")
 
 func main() {
-	c := client.NewClient(rpc.DevnetRPCEndpoint)
-
-	ata, _, err := common.FindAssociatedTokenAddress(alice.PublicKey, mintPubkey)
-	if err != nil {
-		log.Fatalf("find ata error, err: %v", err)
-	}
-	fmt.Println("ata:", ata.ToBase58())
+	c := client.NewClient(rpc.TestnetRPCEndpoint)
 
 	res, err := c.GetRecentBlockhash(context.Background())
 	if err != nil {
 		log.Fatalf("get recent block hash error, err: %v\n", err)
 	}
+	ins, account := assotokenprog.CreateAssociatedTokenAccount(
+		alice.PublicKey,
+		alice.PublicKey,
+		mintPubkey,
+	)
+
+	log.Println("create token account:", account.String(),
+		" token: ", mintPubkey.ToBase58(),
+		" hash ", res.Blockhash)
 	rawTx, err := types.CreateRawTransaction(types.CreateRawTransactionParam{
-		Instructions: []types.Instruction{
-			assotokenprog.CreateAssociatedTokenAccount(
-				feePayer.PublicKey,
-				alice.PublicKey,
-				mintPubkey,
-			),
-		},
-		Signers:         []types.Account{feePayer},
-		FeePayer:        feePayer.PublicKey,
+		Instructions:    []types.Instruction{ins},
+		Signers:         []types.Account{alice},
+		FeePayer:        alice.PublicKey,
 		RecentBlockHash: res.Blockhash,
 	})
 	if err != nil {
@@ -53,4 +51,6 @@ func main() {
 	}
 
 	log.Println("txhash:", txhash)
+	resp, err := c.GetTransaction(context.Background(), txhash, rpc.GetTransactionWithLimitConfig{})
+	log.Println(resp)
 }

@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-
 	"github.com/36625090/solana-go/client/rpc"
 	"github.com/36625090/solana-go/common"
 	"github.com/36625090/solana-go/types"
@@ -67,6 +66,7 @@ func (c *Client) GetAccountInfo(ctx context.Context, base58Addr string) (Account
 	if data[1] != string(rpc.GetAccountInfoConfigEncodingBase64) {
 		return AccountInfo{}, fmt.Errorf("encoding mistmatch")
 	}
+
 	rawData, err := base64.StdEncoding.DecodeString(data[0].(string))
 	if err != nil {
 		return AccountInfo{}, fmt.Errorf("failed to base64 decode data")

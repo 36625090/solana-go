@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// create new account
-	newAccount := types.NewAccount()
+	newAccount, _ := types.AccountFromBase58("EwxPevTC3Y2di5GRmmBk8kxYMBj4ecHUisML3iyNZC8h")
 	fmt.Println(newAccount.PublicKey.ToBase58())
 	fmt.Println(newAccount.PrivateKey)
 
